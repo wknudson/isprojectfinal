@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Simple Wordle Game</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      text-align: center;
+      background-color: #f0f0f0;
+      margin: 0;
+      padding: 20px;
+    }
+    .board {
+      display: grid;
+      grid-template-columns: repeat(5, 50px);
+      gap: 10px;
+      justify-content: center;
+      margin: 20px 0;
+    }
+    .tile {
+      width: 50px;
+      height: 50px;
+      background-color: #ffffff;
+      border: 2px solid #cccccc;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 20px;
+      font-weight: bold;
+    }
+    .correct {
+      background-color: #6aaa64;
+      color: white;
+    }
+    .present {
+      background-color: #c9b458;
+      color: white;
+    }
+    .absent {
+      background-color: #787c7e;
+      color: white;
+    }
+    .input-container {
+      margin: 20px;
+    }
+    input {
+      font-size: 18px;
+      padding: 5px;
+      width: 150px;
+    }
+    button {
+      font-size: 18px;
+      padding: 5px 10px;
+      margin-left: 10px;
+      cursor: pointer;
+    }
+    canvas {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: 100;
+    }
+  </style>
+</head>
+<body>
+  <h1>Simple Wordle Game</h1>
+  <div class="board" id="board"></div>
+  <div class="input-container">
+    <input type="text" id="guessInput" maxlength="5" placeholder="Enter 5-letter word" />
+    <button onclick="submitGuess()">Submit</button>
+    <button onclick="restartGame()">Restart</button>
+  </div>
+  <p id="message"></p>
+  <canvas id="fireworks"></canvas>
+
+  <script>
+    const WORDS = ["APPLE", "BANJO", "CRANE", "DRIFT", "ELFIN", "FRUIT", "GLOWN", "HOTEL", "IMPEL", "JUMPY", "HAPPY"];
+    let WORD = "";
+    const MAX_TRIES = 5;
+    let currentTry, board, message, guessedWords = [];
+
+    function initializeGame() {
+      currentTry = 0;
+      guessedWords = [];
+      message = document.getElementById('message');
+      message.textContent = "";
+
+      WORD = WORDS[Math.floor(Math.random() * WORDS.length)];
+      board = document.getElementById('board');
+      board.innerHTML = "";
+      for (let i = 0; i < MAX_TRIES * 5; i++) {
+        const tile = document.createElement('div');
+        tile.className = 'tile';
+        board.appendChild(tile);
+      }
+
+      const input = document.getElementById('guessInput');
+      input.value = "";
+      input.disabled = false;
+      document.querySelector('button[onclick="submitGuess()"]').disabled = false;
+
+      stopFireworks();
+
+      const isDebugMode = false;
+      if (isDebugMode) console.log(`Word to guess: ${WORD}`);
+    }
+
+    function submitGuess() {
+      const input = document.getElementById('guessInput');
+      const guess = input.value.toUpperCase().replace(/[^A-Z]/g, '');
+      input.value = "";
+
+      if (guess.length !== 5) {
+        message.textContent = "Please enter a 5-letter word.";
+        return;
+      }
+
+      if (guessedWords.includes(guess)) {
+        message.textContent = "You've already guessed that word.";
+        return;
+      }
+      guessedWords.push(guess);
+
+      if (currentTry >= MAX_TRIES || message.textContent.includes("Congratulations")) {
+        return;
+      }
+
+      const tiles = document.querySelectorAll('.tile');
+      for (let i = 0; i < 5; i++) {
+        const tileIndex = currentTry * 5 + i;
+        tiles[tileIndex].textContent = guess[i];
+
+        if (guess[i] === WORD[i]) {
+          tiles[tileIndex].classList.add('correct');
+        } else if (WORD.includes(guess[i])) {
+          tiles[tileIndex].classList.add('present');
+        } else {
+          tiles[tileIndex].classList.add('absent');
+        }
+      }
+
+      if (guess === WORD) {
+        message.textContent = "Congratulations! You've guessed the word!";
+        startFireworks();
+        disableGame();
+        return;
+      }
+
+      currentTry++;
+      if (currentTry === MAX_TRIES) {
+        message.textContent = `Game over! The word was ${WORD}.`;
+        disableGame();
+      }
+    }
+
+    function restartGame() {
+      initializeGame();
+    }
+
+    function disableGame() {
+      document.getElementById('guessInput').disabled = true;
+      document.querySelector('button[onclick="submitGuess()"]').disabled = true;
+    }
+
+    const canvas = document.getElementById('fireworks');
+    const ctx = canvas.getContext('2d');
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+
+    let fireworks = [];
+    let animationFrame;
+
+    class Firework {
+      constructor(x, y, colors) {
+        this.x = x;
+        this.y = y;
+        this.colors = colors;
+        this.particles = [];
+        for (let i = 0; i < 50; i++) {
+          const angle = Math.random() * Math.PI * 2;
+          const speed = Math.random() * 3 + 1;
+          this.particles.push({
+            x: this.x,
+            y: this.y,
+            dx: Math.cos(angle) * speed,
+            dy: Math.sin(angle) * speed,
+            alpha: 1
+          });
+        }
+      }
+      update() {
+        this.particles.forEach(p => {
+          p.x += p.dx;
+          p.y += p.dy;
+          p.alpha -= 0.02;
+        });
+        this.particles = this.particles.filter(p => p.alpha > 0);
+      }
+      draw(ctx) {
+        this.particles.forEach(p => {
+          ctx.globalAlpha = p.alpha;
+          ctx.fillStyle = this.colors[Math.floor(Math.random() * this.colors.length)];
+          ctx.beginPath();
+          ctx.arc(p.x, p.y, 3, 0, Math.PI * 2);
+          ctx.fill();
+        });
+      }
+    }
+
+    function startFireworks() {
+      fireworks = [];
+      animationFrame = requestAnimationFrame(animateFireworks);
+      for (let i = 0; i < 5; i++) {
+        setTimeout(() => {
+          fireworks.push(new Firework(
+            Math.random() * canvas.width,
+            Math.random() * canvas.height / 2,
+            ['#ff0000', '#00ff00', '#0000ff', '#ffff00', '#ff00ff']
+          ));
+        }, i * 500);
+      }
+    }
+
+    function animateFireworks() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      fireworks.forEach(f => {
+        f.update();
+        f.draw(ctx);
+      });
+      fireworks = fireworks.filter(f => f.particles.length > 0);
+      if (fireworks.length > 0) {
+        animationFrame = requestAnimationFrame(animateFireworks);
+      }
+    }
+
+    function stopFireworks() {
+      cancelAnimationFrame(animationFrame);
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+    }
+
+    window.addEventListener('resize', () => {
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+    });
+
+    initializeGame();
+  </script>
+</body>
+</html>

@@ -1,0 +1,142 @@
+/* General Styles */
+body {
+    max-width: 100%;
+    overflow-x: hidden;
+    font-family: 'Roboto', Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #1a1a1a;
+    color: #e0e0e0;
+}
+
+/* Navigation Bar */
+.nav {
+    background-color: #333333;
+    color: white;
+    padding: 15px;
+    text-align: center;
+}
+
+.nav a {
+    color: #bbbbbb;
+    text-decoration: none;
+    margin: 0 15px;
+    font-weight: bold;
+    font-size: 1.1em;
+}
+
+.nav a:hover {
+    color: #bbbbbb;
+}
+
+/* Header Section */
+.top {
+    background-color: #222222;
+    color: #ffffff;
+    text-align: center;
+    padding: 30px 10px;
+    border-bottom: 3px solid #bbbbbb;
+}
+
+.top h1 {
+    font-size: 2.8em;
+    font-weight: bold;
+    margin-bottom: 10px;
+}
+
+.top h5 {
+    font-size: 1.2em;
+    font-style: italic;
+    color: #bbbbbb;
+}
+
+/* Main Content Area */
+.content {
+    margin: 20px auto;
+    padding: 25px;
+    background-color: #2a2a2a;
+    border: 1px solid #444;
+    border-radius: 10px;
+    width: 85%;
+    max-width: 750px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5);
+}
+
+/* Bottom Section */
+.bottom {
+    background-color: #333333;
+    color: #bbbbbb;
+    text-align: center;
+    padding: 15px;
+    font-size: 0.9em;
+    position: relative;
+    bottom: 0;
+}
+
+/* Links and Lists */
+a {
+    color: #bbbbbb;
+    text-decoration: none;
+}
+
+a:hover {
+    text-decoration: underline;
+    color: #bbbbbb;
+}
+
+ol li {
+    margin-bottom: 10px;
+}
+
+ul li {
+    margin-bottom: 5px;
+}
+
+/* Image */
+img {
+    border-radius: 10px;
+    margin-bottom: 15px;
+    border: 1px solid #444;
+}
+
+img, iframe {
+    max-width: 100%;
+    
+}
+
+.centered {
+    text-align: center;
+}
+
+/* Tableau vz */
+.tableauViz {
+    display: block;
+    margin: 0 auto;
+    width: 80%; /* Narrower viz */
+    max-width: 1200px;
+    height: auto;
+    border-radius: 10px;
+    overflow: hidden;
+    border: 2px solid #bbbbbb;
+}
+
+.tableauPlaceholder {
+    max-width: 100%;
+    overflow-x: auto;
+}
+
+/* Button */
+button {
+    background-color: #bbbbbb;
+    color: #ffffff;
+    border: none;
+    padding: 10px 20px;
+    font-size: 1em;
+    border-radius: 5px;
+    cursor: pointer;
+    margin-top: 20px;
+}
+
+button:hover {
+    background-color: #bbbbbb;
+}
